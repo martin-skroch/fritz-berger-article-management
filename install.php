@@ -3,28 +3,43 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Database;
+use Faker\Factory as Faker;
 
 try {
     $pdo = Database::getConnection();
+    $faker = Faker::create('de_DE');
 
-    $file = __DIR__ . '/schema.sql';
+    $pdo->exec('CREATE TABLE IF NOT EXISTS articles (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        number VARCHAR(20) NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );');
 
-    if (!file_exists($file)) {
-        throw new RuntimeException("Datei 'schema.sql' nicht gefunden.");
+    $articles = [];
+
+    foreach (range(1, 30) as $article) {
+        $area = implode('', $faker->randomElements(range('A', 'D'), 1));
+
+        array_push($articles, [
+            'name' => ucfirst($faker->words(2, true)),
+            'number' => $faker->numerify($area . '0######'),
+            'price' => $faker->randomFloat(2, 50, 500),
+        ]);
     }
 
-    $sql = file_get_contents($file);
+    $inserts = array_map(fn($article) => "('" . $article['name'] . "', '" . $article['number'] . "', " . $article['price'] . ")", $articles);
 
-    if ($sql === false) {
-        throw new RuntimeException("Fehler beim Lesen von schema.sql");
-    }
+    $pdo->exec('INSERT INTO articles (name, number, price) VALUES ' . implode(', ', $inserts) . ';');
 
-    $pdo->exec($sql);
+    $output = shell_exec('rm -rf ./storage/cache ./storage/compiled');
 
-    echo "✅ Tabellen erfolgreich erstellt.</p>";
+    echo "✅ Tabellen erfolgreich erstellt.\n";
 
 } catch (Throwable $e) {
 
-    echo "❌ Fehler: {$e->getMessage()}";
+    echo "❌ Fehler: {$e->getMessage()}\n";
 
 }
