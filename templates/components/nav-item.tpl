@@ -1,0 +1,1 @@
+<a href="{$href}" class="inline-flex p-5 hover:bg-white/20" title="{$label}">{$label}</a>
