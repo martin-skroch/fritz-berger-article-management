@@ -2,7 +2,7 @@
 
 {block name="content"}
 <div>
-   {include 'components/heading.tpl' title="Produkt bearbeiten"}
+   {include 'components/heading.tpl' title="Artikel bearbeiten"}
 
    <form action="/index.php?action=update" method="post" class="space-y-4 mt-4">
          {include 'components/input.tpl' type="hidden" name="id" value="{$article.id|escape}" required=true}
