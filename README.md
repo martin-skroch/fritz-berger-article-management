@@ -35,13 +35,19 @@ Now open [http://localhost:8000](http://localhost:8000) in your preferred browse
 
 > **If you have installed Docker, please use this setup.**
 
+Start docker containers:
+
 ```bash
 docker compose up -d
 ```
 
+Install composer dependencies:
+
 ```bash
 docker compose exec -it app bash -c "composer install"
 ```
+
+Create database tables:
 
 ```bash
 docker compose exec -it app bash -c "php install.php"
