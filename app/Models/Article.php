@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Database;
 use PDO;
 
-class Product
+class Article
 {
     protected static $table = 'articles';
 
@@ -19,6 +19,8 @@ class Product
             $sql .= " WHERE name LIKE :search OR number LIKE :search";
             $params['search'] = '%' . $search . '%';
         }
+
+        $sql .= " ORDER BY updated_at DESC";
 
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
@@ -65,7 +67,7 @@ class Product
             GROUP BY prefix
             ORDER BY prefix
         ");
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

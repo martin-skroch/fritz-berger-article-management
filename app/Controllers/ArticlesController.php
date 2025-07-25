@@ -2,8 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Models\Product;
+use App\Helper;
+use App\Models\Article;
 use Smarty\Smarty;
+use Smarty\Template;
 
 class ArticlesController
 {
@@ -30,11 +32,11 @@ class ArticlesController
         }
 
         $search = $_GET['q'] ?? '';
-        $articles = Product::all($search);
+        $articles = Article::all($search);
 
         $this->smarty->assign('articles', $articles);
         $this->smarty->assign('search', $search);
-        $this->smarty->display('views/index.tpl');
+        $this->smarty->display('views/articles/index.tpl', md5(count($articles)));
     }
 
     public function create(): void
@@ -43,7 +45,7 @@ class ArticlesController
             header('Location: /', true, 405);
         }
 
-        $this->smarty->display('views/create.tpl');
+        $this->smarty->display('views/articles/create.tpl');
     }
 
     public function store(): void
@@ -54,13 +56,15 @@ class ArticlesController
 
         $data = array_map(fn($input) => htmlspecialchars($input), $_POST);
 
-        Product::create(
+        Article::create(
             name: $data['name'],
             number: $data['number'],
             price: $data['price']
         );
 
-        $this->smarty->clearCache('views/index.tpl');
+        $this->smarty->clearCache('views/articles/edit.tpl');
+        $this->smarty->clearCache('views/articles/index.tpl');
+        $this->smarty->clearCache('views/articles/statistics.tpl');
 
         header('Location: /index.php', true, 302);
         exit;
@@ -72,13 +76,10 @@ class ArticlesController
             header('Location: /', true, 405);
         }
 
-        $product = Product::find(htmlspecialchars($_GET['id']));
+        $article = Article::find(htmlspecialchars($_GET['id']));
 
-        $this->smarty->clearCache('views/edit.tpl');
-        $this->smarty->clearCache('views/index.tpl');
-        $this->smarty->clearCache('views/statistics.tpl');
-        $this->smarty->assign('product', $product);
-        $this->smarty->display('views/edit.tpl');
+        $this->smarty->assign('article', $article);
+        $this->smarty->display('views/edit.tpl', md5(serialize($article)));
     }
 
     public function update(): void
@@ -89,15 +90,16 @@ class ArticlesController
 
         $data = array_map(fn($input) => htmlspecialchars($input), $_POST);
 
-        Product::update(
+        Article::update(
             id: intval($data['id']),
             name: $data['name'],
             number: $data['number'],
             price: $data['price'],
         );
 
-        $this->smarty->clearCache('views/index.tpl');
-        $this->smarty->clearCache('views/statistics.tpl');
+        $this->smarty->clearCache('views/articles/edit.tpl');
+        $this->smarty->clearCache('views/articles/index.tpl');
+        $this->smarty->clearCache('views/articles/statistics.tpl');
 
         header('Location: /index.php', true, 302);
         exit;
@@ -109,10 +111,11 @@ class ArticlesController
             header('Location: /index.php', true, 405);
         }
 
-        Product::delete(intval($_GET['id']));
+        Article::delete(intval($_GET['id']));
 
-        $this->smarty->clearCache('views/index.tpl');
-        $this->smarty->clearCache('views/statistics.tpl');
+        $this->smarty->clearCache('views/articles/edit.tpl');
+        $this->smarty->clearCache('views/articles/index.tpl');
+        $this->smarty->clearCache('views/articles/statistics.tpl');
 
         header('Location: /index.php', true, 302);
         exit;
@@ -124,9 +127,9 @@ class ArticlesController
             header('Location: /', true, 405);
         }
 
-        $statistics = Product::statistics();
+        $statistics = Article::statistics();
 
         $this->smarty->assign('statistics', $statistics);
-        $this->smarty->display('views/statistics.tpl');
+        $this->smarty->display('views/articles/statistics.tpl', md5(serialize($statistics)));
     }
 }

@@ -2,14 +2,14 @@
 
 require_once realpath(__DIR__ . '/../vendor/autoload.php');
 
-$productController = new App\Controllers\ArticlesController();
+use App\Controllers\ArticlesController;
 
 match($_GET['action'] ?? null) {
-    default => $productController->index(),
-    'create' => $productController->create(),
-    'store' => $productController->store(),
-    'edit' => $productController->edit(),
-    'update' => $productController->update(),
-    'delete' => $productController->delete(),
-    'statistics' => $productController->statistics(),
+    default => (new ArticlesController())->index(),
+    'create' => (new ArticlesController())->create(),
+    'store' => (new ArticlesController())->store(),
+    'edit' => (new ArticlesController())->edit(),
+    'update' => (new ArticlesController())->update(),
+    'delete' => (new ArticlesController())->delete(),
+    'statistics' => (new ArticlesController())->statistics(),
 };
