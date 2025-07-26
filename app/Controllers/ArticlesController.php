@@ -29,6 +29,7 @@ class ArticlesController
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) !== 'get') {
             header('Location: /', true, 405);
+            exit;
         }
 
         $search = $_GET['q'] ?? '';
@@ -43,6 +44,7 @@ class ArticlesController
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) !== 'get') {
             header('Location: /', true, 405);
+            exit;
         }
 
         $this->smarty->display('views/articles/create.tpl');
@@ -52,6 +54,7 @@ class ArticlesController
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post') {
             header('Location: /index.php?action=create', true, 405);
+            exit;
         }
 
         $data = array_map(fn($input) => htmlspecialchars($input), $_POST);
@@ -74,6 +77,7 @@ class ArticlesController
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) !== 'get') {
             header('Location: /', true, 405);
+            exit;
         }
 
         $article = Article::find(htmlspecialchars($_GET['id']));
@@ -86,6 +90,7 @@ class ArticlesController
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post') {
             header('Location: /index.php', true, 405);
+            exit;
         }
 
         $data = array_map(fn($input) => htmlspecialchars($input), $_POST);
@@ -125,6 +130,7 @@ class ArticlesController
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) !== 'get') {
             header('Location: /', true, 405);
+            exit;
         }
 
         $statistics = Article::statistics();
