@@ -8,8 +8,32 @@ use PDO;
 class Article
 {
     protected static $table = 'articles';
+    public static $perPage = 12;
 
-    public static function all(?string $search = null): array
+    public static function count(?string $search = null, $page = 1): int
+    {
+        $db = Database::getConnection();
+        $sql = "SELECT COUNT(*) FROM " . self::$table;
+        $params = [];
+
+        if ($search) {
+            $sql .= " WHERE name LIKE :search OR number LIKE :search";
+            $params['search'] = '%' . $search . '%';
+        }
+
+        $sql .= " LIMIT " . self::$perPage;
+
+        if ($page > 1) {
+            $sql .= " OFFSET " . (self::$perPage * $page - self::$perPage);
+        }
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchColumn();
+    }
+
+    public static function all(?string $search = null, $page = 1): array
     {
         $db = Database::getConnection();
         $sql = "SELECT * FROM " . self::$table;
@@ -20,7 +44,11 @@ class Article
             $params['search'] = '%' . $search . '%';
         }
 
-        $sql .= " ORDER BY updated_at DESC";
+        $sql .= " ORDER BY number ASC LIMIT " . self::$perPage;
+
+        if ($page > 1) {
+            $sql .= " OFFSET " . (self::$perPage * $page - self::$perPage);
+        }
 
         $stmt = $db->prepare($sql);
         $stmt->execute($params);

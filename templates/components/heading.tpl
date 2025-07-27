@@ -1,1 +1,1 @@
-<h1 class="text-3xl font-bold text-stone-500 {$class}">{$title}</h1>
+<h1 class="text-3xl font-bold text-stone-500 {$class|default:''}">{$title}</h1>
